@@ -1,3 +1,10 @@
+
+#[macro_use]
+extern crate serde_derive;
+
+extern crate serde;
+extern crate serde_json;
+
 use std::net::TcpListener;
 use std::fs::File;
 use std::io::prelude::*;
@@ -8,11 +15,19 @@ use std::io::BufReader;
 use std::vec::Vec;
 
 mod http_headers;
+mod webserver_config;
+
+
 
 fn main() {
 
     println!("----------start----------");
-    let listener = TcpListener::bind("0.0.0.0:3333").unwrap();
+
+    let config = webserver_config::WebserverConfig::new(r"D:\08_Desktop\config.json");
+    println!("ip: {}, port: {}, root: {}", config.ip, config.port, config.document_root);
+
+    let bind_addr = config.bind_addr();
+    let listener = TcpListener::bind(bind_addr.as_str()).unwrap();
 
     for stream in listener.incoming() {
         let mut s = stream.unwrap();
@@ -31,19 +46,11 @@ fn main() {
             if len == 0 || buf == "\r\n" {
                 break;
             }
-
             request_http_headers.push(buf);
-            
         }
 
-        println!("{:?}", request_http_headers);
-
-        let a = http_headers::HttpHeaders::new(&mut request_http_headers);
-        println!("method: {}, uri: {}", a.http_method, a.uri);
-
+        let http_headers = http_headers::HttpHeaders::new(&mut request_http_headers);
         let mut s = reader.get_mut();
-        
-        
 
         let mut f = File::open(r"D:\08_Desktop\projects\aaaaaaa\src\index.html").unwrap();
         let mut value = String::new();
