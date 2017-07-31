@@ -6,6 +6,7 @@ use std::io::Read;
 
 
 
+
 #[derive(Serialize, Deserialize)]
 pub struct WebserverConfig {
     pub ip: String,
@@ -23,11 +24,11 @@ impl WebserverConfig {
         let mut config = String::new();
         f.read_to_string(&mut config).unwrap();
 
-        let a : WebserverConfig = serde_json::from_str(config.as_str()).unwrap();
-        a
+        serde_json::from_str(config.as_str()).unwrap()
+        
     }
 
-    pub fn bind_addr(&self) -> String {
+    pub fn get_bind_addr(&self) -> String {
         let ip = self.ip.as_str();
         let port = self.port.as_str();
 

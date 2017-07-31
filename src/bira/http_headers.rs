@@ -27,7 +27,8 @@ impl HttpHeaders {
             header = header.trim_right_matches("\r");
 
             let tmp: Vec<&str> = header.splitn(2, ':').collect();
-            if !tmp[0].is_empty() {
+            
+            if !tmp[0].is_empty() { // 空行は含めない
                 headers.insert(tmp[0].to_string(), tmp[1].to_string());
             }
             
